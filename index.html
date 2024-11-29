@@ -91,7 +91,7 @@
     </div>
 
     <script>
-        // Sample Questions Data with Correct Answers
+        // Sample Questions Data
         const questions = [
             {
                 question: "What is the capital of France?",
@@ -101,8 +101,7 @@
                     src: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Paris_Night.jpg",
                     alt: "Eiffel Tower at night"
                 },
-                time: 15, // seconds
-                answer: "Paris" // This can be removed if not needed
+                time: 15 // seconds
             },
             {
                 question: "Who directed the movie 'Inception'?",
@@ -111,8 +110,7 @@
                     type: "video",
                     src: "https://www.w3schools.com/html/mov_bbb.mp4"
                 },
-                time: 20,
-                answer: "Christopher Nolan" // This can be removed if not needed
+                time: 20
             },
             {
                 question: "Solve the following: 5 + 7 × 2",
@@ -121,8 +119,7 @@
                     type: "text",
                     content: "Remember the order of operations (PEMDAS)."
                 },
-                time: 10,
-                answer: "19" // This can be removed if not needed
+                time: 10
             },
             {
                 question: "What song is skillfully depicted here?",
@@ -131,8 +128,7 @@
                     type: "youtube",
                     src: "https://www.youtube.com/embed/AqbM1ZDMJeI?autoplay=1" // Removed autoplay=1
                 },
-                time: 20,
-                answer: "Never Gonna Give You Up" // This can be removed if not needed
+                time: 20
             },
             // Add more questions as needed
         ];
@@ -219,6 +215,9 @@
             // Initialize Timer
             timeLeft = questionObj.time;
             timerBar.style.width = '100%';
+            // Reset timer bar color to green
+            timerBar.classList.remove('bg-red-500');
+            timerBar.classList.add('bg-green-500');
             timerInterval = setInterval(updateTimer, 1000);
 
             // Disable Previous button on first question
@@ -234,7 +233,9 @@
         function updateTimer() {
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                nextQuestion(); // Automatically go to the next question
+                // Change timer bar color to red to indicate time is up
+                timerBar.classList.remove('bg-green-500');
+                timerBar.classList.add('bg-red-500');
                 return;
             }
             timeLeft--;
