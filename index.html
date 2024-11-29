@@ -102,7 +102,7 @@
                     alt: "Eiffel Tower at night"
                 },
                 time: 15, // seconds
-                answer: "Paris"
+                answer: "Paris" // This can be removed if not needed
             },
             {
                 question: "Who directed the movie 'Inception'?",
@@ -112,7 +112,7 @@
                     src: "https://www.w3schools.com/html/mov_bbb.mp4"
                 },
                 time: 20,
-                answer: "Christopher Nolan"
+                answer: "Christopher Nolan" // This can be removed if not needed
             },
             {
                 question: "Solve the following: 5 + 7 × 2",
@@ -122,17 +122,17 @@
                     content: "Remember the order of operations (PEMDAS)."
                 },
                 time: 10,
-                answer: "19"
+                answer: "19" // This can be removed if not needed
             },
             {
-                question: "Welk liedje wordt hier heel vakkundig gecoverd",
+                question: "What song is skillfully depicted here?",
                 category: "Music",
                 media: {
                     type: "youtube",
                     src: "https://www.youtube.com/embed/AqbM1ZDMJeI?autoplay=1" // Removed autoplay=1
                 },
                 time: 20,
-                answer: "Mana, mana"
+                answer: "Never Gonna Give You Up" // This can be removed if not needed
             },
             // Add more questions as needed
         ];
@@ -140,7 +140,6 @@
         let currentQuestionIndex = 0;
         let timerInterval;
         let timeLeft;
-        let score = 0;
 
         const questionArea = document.getElementById('questionArea');
         const mediaContent = document.getElementById('mediaContent');
@@ -157,17 +156,6 @@
             document.documentElement.classList.toggle('dark');
         });
 
-        // Prevent Event Listener Duplication by Defining Handlers Outside
-        function handleSubmitAnswer() {
-            submitAnswer(currentQuestionIndex);
-        }
-
-        function handleEnterKey(e) {
-            if (e.key === 'Enter') {
-                submitAnswer(currentQuestionIndex);
-            }
-        }
-
         function loadQuestion(index) {
             clearInterval(timerInterval);
             const questionObj = questions[index];
@@ -180,13 +168,9 @@
             const progressPercentage = ((index + 1) / questions.length) * 100;
             progressBar.style.width = `${progressPercentage}%`;
 
-            // Display Question with Answer Input
+            // Display Question
             questionArea.innerHTML = `
                 <h2 class="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-100">Q${index + 1}: ${questionObj.question}</h2>
-                <input type="text" id="answerInput" class="mt-4 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200" placeholder="Your answer here..." aria-label="Answer Input">
-                <button id="submitAnswer" class="mt-2 px-4 py-2 bg-green-500 dark:bg-green-700 text-white rounded hover:bg-green-600 dark:hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500" aria-label="Submit Answer">
-                    Submit
-                </button>
             `;
 
             // Display Media
@@ -239,48 +223,18 @@
 
             // Disable Previous button on first question
             prevBtn.disabled = index === 0;
-            // Disable Next button on last question only if the current question is answered
-            nextBtn.disabled = false;
-
             // Disable Next button on last question
             if (index === questions.length - 1) {
                 nextBtn.disabled = true;
-            }
-
-            // Add Event Listener for Submit Button
-            const submitAnswerBtn = document.getElementById('submitAnswer');
-            const answerInput = document.getElementById('answerInput');
-            if (submitAnswerBtn) {
-                // Remove existing listeners to prevent duplication
-                submitAnswerBtn.removeEventListener('click', handleSubmitAnswer);
-                submitAnswerBtn.addEventListener('click', handleSubmitAnswer);
-            }
-
-            if (answerInput) {
-                // Remove existing listeners to prevent duplication
-                answerInput.removeEventListener('keypress', handleEnterKey);
-                answerInput.addEventListener('keypress', handleEnterKey);
-            }
-        }
-
-        function submitAnswer(index) {
-            clearInterval(timerInterval);
-            const userAnswer = document.getElementById('answerInput').value.trim().toLowerCase();
-            const correctAnswer = questions[index].answer.trim().toLowerCase();
-            if (userAnswer === correctAnswer) {
-                score++;
-                alert("✅ Correct!");
             } else {
-                alert(`❌ Incorrect! The correct answer was: ${questions[index].answer}`);
+                nextBtn.disabled = false;
             }
-            nextQuestion();
         }
 
         function updateTimer() {
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                alert(`⏰ Time's up! Moving to the next question.`);
-                nextQuestion();
+                nextQuestion(); // Automatically go to the next question
                 return;
             }
             timeLeft--;
@@ -293,7 +247,7 @@
                 currentQuestionIndex++;
                 loadQuestion(currentQuestionIndex);
             } else {
-                displayFinalScore();
+                displayCompletionMessage();
             }
         }
 
@@ -304,12 +258,12 @@
             }
         }
 
-        function displayFinalScore() {
+        function displayCompletionMessage() {
             clearInterval(timerInterval);
-            // Hide quiz elements and display final score
+            // Hide quiz elements and display completion message
             document.querySelector('.max-w-3xl').innerHTML = `
                 <h2 class="text-3xl font-bold text-center mb-4 text-gray-800 dark:text-gray-100">Quiz Completed!</h2>
-                <p class="text-center text-lg text-gray-700 dark:text-gray-300">Your Score: <span class="font-semibold">${score}</span> out of <span class="font-semibold">${questions.length}</span></p>
+                <p class="text-center text-lg text-gray-700 dark:text-gray-300">Thank you for participating!</p>
                 <button id="restartQuiz" class="mt-6 px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 mx-auto block focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Restart Quiz">
                     Restart Quiz
                 </button>
