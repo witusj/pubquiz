@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pub Quiz App</title>
+    <!-- Tailwind CSS CDN with Dark Mode Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {},
+            },
+            variants: {
+                extend: {},
+            },
+            plugins: [],
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the timer transition */
+        .timer-transition {
+            transition: width 1s linear;
+        }
+        /* Responsive iframe container */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="absolute top-4 right-4 px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Toggle Dark Mode">
+        Toggle Dark Mode
+    </button>
+
+    <div class="max-w-3xl w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 flex flex-col h-[80vh] relative">
+        <!-- Timer Bar -->
+        <div class="w-full h-4 bg-gray-300 dark:bg-gray-600 rounded overflow-hidden mb-2">
+            <div id="timer" class="h-full bg-green-500 timer-transition" style="width: 100%;"></div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
+            <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div id="progressIndicator" class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            <!-- Progress will be displayed here -->
+        </div>
+
+        <!-- Question Area -->
+        <div id="questionArea" class="flex-1 mb-4 overflow-auto">
+            <!-- Question will be displayed here -->
+        </div>
+
+        <!-- Media Content -->
+        <div id="mediaContent" class="mb-4 overflow-auto">
+            <!-- Media (image/video/text/youtube) will be displayed here -->
+        </div>
+
+        <!-- Category Footer -->
+        <div id="category" class="text-right text-sm font-medium text-gray-600 dark:text-gray-400 mb-4">
+            <!-- Category will be displayed here -->
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="flex justify-between mt-auto">
+            <button id="prevBtn" class="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Previous Question">
+                Previous
+            </button>
+            <button id="nextBtn" class="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Next Question">
+                Next
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Sample Questions Data with Correct Answers
+        const questions = [
+            {
+                question: "What is the capital of France?",
+                category: "Geography",
+                media: {
+                    type: "image",
+                    src: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Paris_Night.jpg",
+                    alt: "Eiffel Tower at night"
+                },
+                time: 15, // seconds
+                answer: "Paris"
+            },
+            {
+                question: "Who directed the movie 'Inception'?",
+                category: "Entertainment",
+                media: {
+                    type: "video",
+                    src: "https://www.w3schools.com/html/mov_bbb.mp4"
+                },
+                time: 20,
+                answer: "Christopher Nolan"
+            },
+            {
+                question: "Solve the following: 5 + 7 × 2",
+                category: "Math",
+                media: {
+                    type: "text",
+                    content: "Remember the order of operations (PEMDAS)."
+                },
+                time: 10,
+                answer: "19"
+            },
+            {
+                question: "Welk liedje wordt hier heel vakkundig gecoverd",
+                category: "Music",
+                media: {
+                    type: "youtube",
+                    src: "https://www.youtube.com/embed/AqbM1ZDMJeI?autoplay=1" // Removed autoplay=1
+                },
+                time: 20,
+                answer: "Mana, mana"
+            },
+            // Add more questions as needed
+        ];
+
+        let currentQuestionIndex = 0;
+        let timerInterval;
+        let timeLeft;
+        let score = 0;
+
+        const questionArea = document.getElementById('questionArea');
+        const mediaContent = document.getElementById('mediaContent');
+        const category = document.getElementById('category');
+        const timerBar = document.getElementById('timer');
+        const progressBar = document.getElementById('progressBar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressIndicator = document.getElementById('progressIndicator');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Dark Mode Toggle Functionality
+        darkModeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Prevent Event Listener Duplication by Defining Handlers Outside
+        function handleSubmitAnswer() {
+            submitAnswer(currentQuestionIndex);
+        }
+
+        function handleEnterKey(e) {
+            if (e.key === 'Enter') {
+                submitAnswer(currentQuestionIndex);
+            }
+        }
+
+        function loadQuestion(index) {
+            clearInterval(timerInterval);
+            const questionObj = questions[index];
+            if (!questionObj) return;
+
+            // Update Progress Indicator
+            progressIndicator.textContent = `Question ${index + 1} of ${questions.length}`;
+
+            // Update Progress Bar
+            const progressPercentage = ((index + 1) / questions.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+
+            // Display Question with Answer Input
+            questionArea.innerHTML = `
+                <h2 class="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-100">Q${index + 1}: ${questionObj.question}</h2>
+                <input type="text" id="answerInput" class="mt-4 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200" placeholder="Your answer here..." aria-label="Answer Input">
+                <button id="submitAnswer" class="mt-2 px-4 py-2 bg-green-500 dark:bg-green-700 text-white rounded hover:bg-green-600 dark:hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500" aria-label="Submit Answer">
+                    Submit
+                </button>
+            `;
+
+            // Display Media
+            mediaContent.innerHTML = ''; // Clear previous media
+            if (questionObj.media) {
+                if (questionObj.media.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = questionObj.media.src;
+                    img.alt = questionObj.media.alt || 'Image';
+                    img.className = "w-full h-auto rounded mb-4";
+                    mediaContent.appendChild(img);
+                } else if (questionObj.media.type === 'video') {
+                    const video = document.createElement('video');
+                    video.src = questionObj.media.src;
+                    video.controls = true;
+                    video.className = "w-full h-auto rounded mb-4";
+                    mediaContent.appendChild(video);
+                } else if (questionObj.media.type === 'text') {
+                    const p = document.createElement('p');
+                    p.textContent = questionObj.media.content;
+                    p.className = "text-gray-700 dark:text-gray-300 mb-4";
+                    mediaContent.appendChild(p);
+                } else if (questionObj.media.type === 'youtube') {
+                    const iframeContainer = document.createElement('div');
+                    iframeContainer.className = "iframe-container mb-4";
+                    const iframe = document.createElement('iframe');
+                    iframe.src = questionObj.media.src;
+                    iframe.title = "YouTube video player";
+                    iframe.frameBorder = "0";
+                    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen";
+                    iframe.allowFullscreen = true;
+                    iframeContainer.appendChild(iframe);
+                    mediaContent.appendChild(iframeContainer);
+                } else {
+                    // Handle unrecognized media types gracefully
+                    const p = document.createElement('p');
+                    p.textContent = "Unsupported media type.";
+                    p.className = "text-red-500 dark:text-red-400 mb-4";
+                    mediaContent.appendChild(p);
+                }
+            }
+
+            // Display Category
+            category.textContent = `Category: ${questionObj.category}`;
+
+            // Initialize Timer
+            timeLeft = questionObj.time;
+            timerBar.style.width = '100%';
+            timerInterval = setInterval(updateTimer, 1000);
+
+            // Disable Previous button on first question
+            prevBtn.disabled = index === 0;
+            // Disable Next button on last question only if the current question is answered
+            nextBtn.disabled = false;
+
+            // Disable Next button on last question
+            if (index === questions.length - 1) {
+                nextBtn.disabled = true;
+            }
+
+            // Add Event Listener for Submit Button
+            const submitAnswerBtn = document.getElementById('submitAnswer');
+            const answerInput = document.getElementById('answerInput');
+            if (submitAnswerBtn) {
+                // Remove existing listeners to prevent duplication
+                submitAnswerBtn.removeEventListener('click', handleSubmitAnswer);
+                submitAnswerBtn.addEventListener('click', handleSubmitAnswer);
+            }
+
+            if (answerInput) {
+                // Remove existing listeners to prevent duplication
+                answerInput.removeEventListener('keypress', handleEnterKey);
+                answerInput.addEventListener('keypress', handleEnterKey);
+            }
+        }
+
+        function submitAnswer(index) {
+            clearInterval(timerInterval);
+            const userAnswer = document.getElementById('answerInput').value.trim().toLowerCase();
+            const correctAnswer = questions[index].answer.trim().toLowerCase();
+            if (userAnswer === correctAnswer) {
+                score++;
+                alert("✅ Correct!");
+            } else {
+                alert(`❌ Incorrect! The correct answer was: ${questions[index].answer}`);
+            }
+            nextQuestion();
+        }
+
+        function updateTimer() {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert(`⏰ Time's up! Moving to the next question.`);
+                nextQuestion();
+                return;
+            }
+            timeLeft--;
+            const percentage = (timeLeft / questions[currentQuestionIndex].time) * 100;
+            timerBar.style.width = `${percentage}%`;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            } else {
+                displayFinalScore();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+
+        function displayFinalScore() {
+            clearInterval(timerInterval);
+            // Hide quiz elements and display final score
+            document.querySelector('.max-w-3xl').innerHTML = `
+                <h2 class="text-3xl font-bold text-center mb-4 text-gray-800 dark:text-gray-100">Quiz Completed!</h2>
+                <p class="text-center text-lg text-gray-700 dark:text-gray-300">Your Score: <span class="font-semibold">${score}</span> out of <span class="font-semibold">${questions.length}</span></p>
+                <button id="restartQuiz" class="mt-6 px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 mx-auto block focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Restart Quiz">
+                    Restart Quiz
+                </button>
+            `;
+
+            // Add Event Listener to Restart Button
+            const restartQuizBtn = document.getElementById('restartQuiz');
+            if (restartQuizBtn) {
+                restartQuizBtn.addEventListener('click', () => {
+                    location.reload();
+                });
+            }
+        }
+
+        // Event Listeners for Navigation Buttons
+        nextBtn.addEventListener('click', nextQuestion);
+        prevBtn.addEventListener('click', prevQuestion);
+
+        // Initialize First Question
+        loadQuestion(currentQuestionIndex);
+    </script>
+
+</body>
+</html>
