@@ -147,9 +147,21 @@
                 question: "Hoeveel is \\(x^{2}\\) + \\(y^{2}\\) in dit geval en wat heeft Pythagoras hiermee te maken?",
                 category: "Wetenschap",
                 media: {
-                    type: "image",
-                    src: "https://github.com/witusj/pubquiz/blob/main/images/pythogoras.png?raw=true",
-                    alt: "Pythagoras"
+                    type: "imageWithSound",
+                    imageSrc: "https://github.com/witusj/pubquiz/blob/main/images/pythogoras.png?raw=true",
+                    imageAlt: "Pythagoras",
+                    audioSrc: "https://your-audio-url.com/pythagoras-explanation.mp3" // Replace with your actual audio URL
+                },
+                time: 20 // seconds
+            },
+            {
+                question: "Om welke film gaat het hier en wie was de vader van de actrice die de vrouw van de hoofdrolspeler speelde?",
+                category: "Entertainment",
+                media: {
+                    type: "imageWithSound",
+                    imageSrc: "https://github.com/witusj/pubquiz/blob/main/images/dz.jpg?raw=true",
+                    imageAlt: "Geraldine",
+                    audioSrc: "https://your-audio-url.com/pythagoras-explanation.mp3" // Replace with your actual audio URL
                 },
                 time: 20 // seconds
             },
@@ -158,8 +170,8 @@
                 category: "Entertainment",
                 media: {
                     type: "image",
-                    src: "https://github.com/witusj/pubquiz/blob/main/images/starwars.png?raw=true",
-                    alt: "Star Wars Actor"
+                    src: "https://github.com/witusj/pubquiz/blob/main/images/dz.jpg?raw=true",
+                    alt: "Geraldine"
                 },
                 time: 20 // seconds
             },
@@ -168,7 +180,7 @@
                 category: "Entertainment",
                 media: {
                     type: "youtube",
-                    src: "https://www.youtube.com/embed/AqbM1ZDMJeI?autoplay=1"
+                    src: "https://www.youtube.com/embed/AqbM1ZDMJeI?autoplay=1" // DON’T delete autoplay=1
                 },
                 time: 20
             },
@@ -215,6 +227,10 @@
         playMusicBtn.addEventListener('click', () => {
             backgroundMusic.play().then(() => {
                 console.log('Background music is playing.');
+                // Optionally, change button text or style to indicate playing
+                playMusicBtn.textContent = 'Music Playing';
+                playMusicBtn.classList.remove('bg-purple-500', 'hover:bg-purple-600');
+                playMusicBtn.classList.add('bg-purple-700', 'hover:bg-purple-800');
             }).catch((error) => {
                 console.error('Failed to play background music:', error);
                 alert('Kan de achtergrondmuziek niet afspelen. Controleer je browserinstellingen.');
@@ -260,40 +276,101 @@
             // Display Media
             mediaContent.innerHTML = ''; // Clear previous media
             if (questionObj.media) {
-                if (questionObj.media.type === 'image') {
-                    const img = document.createElement('img');
-                    img.src = questionObj.media.src;
-                    img.alt = questionObj.media.alt || 'Image';
-                    img.className = "w-full h-auto rounded mb-4";
-                    mediaContent.appendChild(img);
-                } else if (questionObj.media.type === 'video') {
-                    const video = document.createElement('video');
-                    video.src = questionObj.media.src;
-                    video.controls = true;
-                    video.className = "w-full h-auto rounded mb-4";
-                    mediaContent.appendChild(video);
-                } else if (questionObj.media.type === 'text') {
-                    const p = document.createElement('p');
-                    p.innerHTML = questionObj.media.content;
-                    p.className = "text-gray-700 dark:text-gray-300 mb-4";
-                    mediaContent.appendChild(p);
-                } else if (questionObj.media.type === 'youtube') {
-                    const iframeContainer = document.createElement('div');
-                    iframeContainer.className = "iframe-container mb-4";
-                    const iframe = document.createElement('iframe');
-                    iframe.src = questionObj.media.src;
-                    iframe.title = "YouTube video player";
-                    iframe.frameBorder = "0";
-                    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen";
-                    iframe.allowFullscreen = true;
-                    iframeContainer.appendChild(iframe);
-                    mediaContent.appendChild(iframeContainer);
-                } else {
-                    // Handle unrecognized media types gracefully
-                    const p = document.createElement('p');
-                    p.textContent = "Unsupported media type.";
-                    p.className = "text-red-500 dark:text-red-400 mb-4";
-                    mediaContent.appendChild(p);
+                switch (questionObj.media.type) {
+                    case 'image':
+                        const img = document.createElement('img');
+                        img.src = questionObj.media.src;
+                        img.alt = questionObj.media.alt || 'Image';
+                        img.className = "w-full h-auto rounded mb-4";
+                        mediaContent.appendChild(img);
+                        break;
+                    case 'video':
+                        const video = document.createElement('video');
+                        video.src = questionObj.media.src;
+                        video.controls = true;
+                        video.className = "w-full h-auto rounded mb-4";
+                        mediaContent.appendChild(video);
+                        break;
+                    case 'text':
+                        const p = document.createElement('p');
+                        p.innerHTML = questionObj.media.content;
+                        p.className = "text-gray-700 dark:text-gray-300 mb-4";
+                        mediaContent.appendChild(p);
+                        break;
+                    case 'youtube':
+                        const iframeContainer = document.createElement('div');
+                        iframeContainer.className = "iframe-container mb-4";
+                        const iframe = document.createElement('iframe');
+                        iframe.src = questionObj.media.src;
+                        iframe.title = "YouTube video player";
+                        iframe.frameBorder = "0";
+                        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen";
+                        iframe.allowFullscreen = true;
+                        iframeContainer.appendChild(iframe);
+                        mediaContent.appendChild(iframeContainer);
+                        break;
+                    case 'imageWithSound':
+                        // Create a container for image and audio
+                        const imgWithSoundContainer = document.createElement('div');
+                        imgWithSoundContainer.className = "flex flex-col items-center mb-4";
+
+                        // Create Image Element
+                        const imgWithSound = document.createElement('img');
+                        imgWithSound.src = questionObj.media.imageSrc;
+                        imgWithSound.alt = questionObj.media.imageAlt || 'Image with Sound';
+                        imgWithSound.className = "w-full h-auto rounded";
+
+                        // Create Audio Element
+                        const audioWithSound = document.createElement('audio');
+                        audioWithSound.src = questionObj.media.audioSrc;
+                        audioWithSound.className = "hidden"; // Hidden by default
+
+                        // Create Speaker Icon Button
+                        const speakerBtn = document.createElement('button');
+                        speakerBtn.className = "mt-2 focus:outline-none";
+                        speakerBtn.setAttribute('aria-label', 'Toggle Audio');
+
+                        // Speaker Icon SVG (muted by default)
+                        speakerBtn.innerHTML = `
+                            <svg id="speakerIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-800 dark:text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path id="speakerPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5l-7 7m0 0l7 7m-7-7h18" />
+                            </svg>
+                        `;
+
+                        // Toggle Functionality
+                        speakerBtn.addEventListener('click', () => {
+                            if (audioWithSound.paused) {
+                                audioWithSound.play();
+                                // Change icon to indicate audio is playing
+                                speakerBtn.innerHTML = `
+                                    <svg id="speakerIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path id="speakerPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5l-7 7m0 0l7 7m-7-7h18" />
+                                    </svg>
+                                `;
+                            } else {
+                                audioWithSound.pause();
+                                // Change icon back to muted
+                                speakerBtn.innerHTML = `
+                                    <svg id="speakerIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-800 dark:text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path id="speakerPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5l-7 7m0 0l7 7m-7-7h18" />
+                                    </svg>
+                                `;
+                            }
+                        });
+
+                        // Append elements
+                        imgWithSoundContainer.appendChild(imgWithSound);
+                        imgWithSoundContainer.appendChild(speakerBtn);
+                        imgWithSoundContainer.appendChild(audioWithSound);
+                        mediaContent.appendChild(imgWithSoundContainer);
+                        break;
+                    default:
+                        // Handle unrecognized media types gracefully
+                        const unsupportedP = document.createElement('p');
+                        unsupportedP.textContent = "Unsupported media type.";
+                        unsupportedP.className = "text-red-500 dark:text-red-400 mb-4";
+                        mediaContent.appendChild(unsupportedP);
+                        break;
                 }
             }
 
