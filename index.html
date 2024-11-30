@@ -106,16 +106,17 @@
                     src: "https://github.com/witusj/pubquiz/blob/main/images/flowers.png?raw=true",
                     alt: "Flowers"
                 },
-                time: 15 // seconds
+                time: 20 // seconds
             },
             {
-                question: "Who directed the movie 'Inception'?",
+                question: "Welke Star Wars acteur is dit jaar overleden en welke personage speelde hij?",
                 category: "Entertainment",
                 media: {
-                    type: "video",
-                    src: "https://www.w3schools.com/html/mov_bbb.mp4"
+                    type: "image",
+                    src: "https://github.com/witusj/pubquiz/blob/main/images/flowers.png?raw=true",
+                    alt: "Flowers"
                 },
-                time: 20
+                time: 20 // seconds
             },
             {
                 question: "Hoeveel is x<sup>2</sup> + y<sup>2</sup> in dit geval?",
@@ -136,7 +137,16 @@
                 },
                 time: 20
             },
-            // Add more questions as needed
+            ,
+            {
+                question: "Van wie is deze uitspraak?",
+                category: "Geschiedenis",
+                media: {
+                    type: "text",
+                    content: "De manier waarop we leven verschilt zo van de manier waarop we zouden moeten leven dat hij die bestudeert wat er gedaan moet worden in plaats van wat er gedaan wordt, de weg naar zijn ondergang zal leren in plaats van naar zijn behoud.<hr class='m-10'>Il modo in cui viviamo è così diverso da come dovremmo vivere che colui che studia ciò che dovrebbe essere fatto piuttosto che ciò che viene fatto imparerà la strada per la sua rovina piuttosto che per la sua conservazione."
+                },
+                time: 20
+            }
         ];
 
         let currentQuestionIndex = 0;
@@ -195,7 +205,7 @@
                     mediaContent.appendChild(video);
                 } else if (questionObj.media.type === 'text') {
                     const p = document.createElement('p');
-                    p.textContent = questionObj.media.content;
+                    p.innerHTML = questionObj.media.content;
                     p.className = "text-gray-700 dark:text-gray-300 mb-4";
                     mediaContent.appendChild(p);
                 } else if (questionObj.media.type === 'youtube') {
