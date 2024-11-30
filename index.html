@@ -57,7 +57,11 @@
         <!-- Welcome Text -->
         <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-100 text-center">Welkom bij de Pub Quiz!</h1>
         <!-- Background Music -->
-        <audio id="backgroundMusic" src="https://your-music-url.com/background-music.mp3" loop></audio>
+        <audio id="backgroundMusic" src="music.mp3" loop></audio>
+        <!-- Play Music Button -->
+        <button id="playMusicBtn" class="mt-4 px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" aria-label="Play Music">
+            Play Music
+        </button>
         <!-- Start Button -->
         <button id="startBtn" class="mt-4 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" aria-label="Start Quiz">
             Start
@@ -115,6 +119,7 @@
         const welcomeScreen = document.getElementById('welcomeScreen');
         const quizContainer = document.getElementById('quizContainer');
         const startBtn = document.getElementById('startBtn');
+        const playMusicBtn = document.getElementById('playMusicBtn');
         const backgroundMusic = document.getElementById('backgroundMusic');
 
         const questions = [
@@ -187,13 +192,18 @@
             document.documentElement.classList.toggle('dark');
         });
 
+        // Play Music Button Functionality
+        playMusicBtn.addEventListener('click', () => {
+            backgroundMusic.play().then(() => {
+                console.log('Background music is playing.');
+            }).catch((error) => {
+                console.error('Failed to play background music:', error);
+                alert('Kan de achtergrondmuziek niet afspelen. Controleer je browserinstellingen.');
+            });
+        });
+
         // Start Button Functionality
         startBtn.addEventListener('click', () => {
-            // Attempt to play background music
-            backgroundMusic.play().catch((error) => {
-                console.log('Autoplay was prevented. User interaction is required to play the audio.');
-            });
-
             // Stop and reset background music
             backgroundMusic.pause();
             backgroundMusic.currentTime = 0;
