@@ -52,21 +52,28 @@
 
     <!-- Welcome Screen -->
     <div id="welcomeScreen" class="flex flex-col items-center justify-center w-full h-full md:h-[80vh] bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6">
-        <!-- Welcome Image -->
-        <img src="images/sintesizer.jpg" alt="Welcome Image" class="w-1/4 md:w-1/4 rounded">
+        <!-- Welcome Image with Play/Pause Button -->
+        <div class="relative w-1/4 md:w-1/4">
+            <img src="images/sintesizer.jpg" alt="Welcome Image" class="w-full rounded">
+            
+            <!-- Play/Pause Button -->
+            <button id="backgroundAudioBtn" class="absolute top-2 right-2 bg-white dark:bg-gray-700 rounded-full p-1 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Play Background Music">
+                <img src="images/play.png" alt="Play Audio" class="h-6 w-6">
+            </button>
+        </div>
+        
         <!-- Welcome Text -->
         <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-100 text-center">Welkom bij de Grote Sinterklaas Quiz 2024!</h1>
+        
         <!-- Background Music -->
-        <audio id="backgroundMusic" src="music.mp3" loop></audio>
-        <!-- Play Music Button -->
-        <button id="playMusicBtn" class="mt-4 px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" aria-label="Play Music">
-            Play Music
-        </button>
+        <audio id="backgroundMusic" src="audio/music.mp3" loop preload="auto"></audio>
+        
         <!-- Start Button -->
         <button id="startBtn" class="mt-4 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" aria-label="Start Quiz">
             Start
         </button>
     </div>
+
 
     <!-- Quiz Container -->
     <div id="quizContainer" class="hidden max-w-3xl w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 flex flex-col h-full md:h-[80vh] relative">
@@ -94,7 +101,7 @@
 
             <!-- Media Content -->
             <div id="mediaContent" class="mb-4">
-                <!-- Media (image/video/text/youtube) will be displayed here -->
+                <!-- Media (image/video/text/youtube/imageWithSound) will be displayed here -->
             </div>
         </div>
 
@@ -115,11 +122,14 @@
     </div>
 
     <script>
+        // Keep track of the currently playing audio to prevent multiple audios from playing simultaneously
+        let currentlyPlayingAudio = null;
+
         // Get references to DOM elements
         const welcomeScreen = document.getElementById('welcomeScreen');
         const quizContainer = document.getElementById('quizContainer');
         const startBtn = document.getElementById('startBtn');
-        const playMusicBtn = document.getElementById('playMusicBtn');
+        const backgroundAudioBtn = document.getElementById('backgroundAudioBtn');
         const backgroundMusic = document.getElementById('backgroundMusic');
 
         const questions = [
@@ -137,9 +147,10 @@
                 question: "Welke Star Wars acteur is dit jaar overleden en welk personage speelde hij?",
                 category: "Entertainment",
                 media: {
-                    type: "image",
-                    src: "https://github.com/witusj/pubquiz/blob/main/images/starwars.png?raw=true",
-                    alt: "Star Wars Actor"
+                    type: "imageWithSound",
+                    imageSrc: "https://github.com/witusj/pubquiz/blob/main/images/starwars.png?raw=true",
+                    imageAlt: "Star Wars",
+                    audioSrc: "audio/starwars.mp3" // Updated path to 'audio/' folder
                 },
                 time: 20 // seconds
             },
@@ -178,7 +189,7 @@
                     type: "imageWithSound",
                     imageSrc: "https://github.com/witusj/pubquiz/blob/main/images/dz.jpg?raw=true",
                     imageAlt: "Geraldine",
-                    audioSrc: "lara.mp3"
+                    audioSrc: "audio/lara.mp3" // Updated path to 'audio/' folder
                 },
                 time: 20 // seconds
             },
@@ -203,6 +214,7 @@
             }
         ];
 
+
         let currentQuestionIndex = 0;
         let timerInterval;
         let timeLeft;
@@ -222,18 +234,35 @@
             document.documentElement.classList.toggle('dark');
         });
 
-        // Play Music Button Functionality
-        playMusicBtn.addEventListener('click', () => {
-            backgroundMusic.play().then(() => {
-                console.log('Background music is playing.');
-                // Optionally, change button text or style to indicate playing
-                playMusicBtn.textContent = 'Music Playing';
-                playMusicBtn.classList.remove('bg-purple-500', 'hover:bg-purple-600');
-                playMusicBtn.classList.add('bg-purple-700', 'hover:bg-purple-800');
-            }).catch((error) => {
-                console.error('Failed to play background music:', error);
-                alert('Kan de achtergrondmuziek niet afspelen. Controleer je browserinstellingen.');
-            });
+        // Play/Pause Button Functionality for Background Music
+        backgroundAudioBtn.addEventListener('click', () => {
+            console.log('Background audio button clicked.');
+            if (backgroundMusic.paused) {
+                // Pause any other playing audio
+                if (currentlyPlayingAudio && currentlyPlayingAudio !== backgroundMusic) {
+                    currentlyPlayingAudio.pause();
+                    // Reset corresponding play/pause buttons if needed
+                    // Example: Reset imageWithSound buttons (optional)
+                }
+                
+                backgroundMusic.play().then(() => {
+                    console.log('Background music is playing.');
+                    // Change icon to pause
+                    backgroundAudioBtn.querySelector('img').src = "images/pause.png";
+                    backgroundAudioBtn.querySelector('img').alt = "Pause Audio";
+                    currentlyPlayingAudio = backgroundMusic;
+                }).catch((error) => {
+                    console.error('Failed to play background music:', error);
+                    alert('Kan de achtergrondmuziek niet afspelen. Controleer je browserinstellingen.');
+                });
+            } else {
+                backgroundMusic.pause();
+                console.log('Background music paused.');
+                // Change icon to play
+                backgroundAudioBtn.querySelector('img').src = "images/play.png";
+                backgroundAudioBtn.querySelector('img').alt = "Play Audio";
+                currentlyPlayingAudio = null;
+            }
         });
 
         // Start Button Functionality
@@ -241,13 +270,18 @@
             // Stop and reset background music
             backgroundMusic.pause();
             backgroundMusic.currentTime = 0;
+            
+            // Reset play/pause button icon to play
+            backgroundAudioBtn.querySelector('img').src = "images/play.png";
+            backgroundAudioBtn.querySelector('img').alt = "Play Audio";
+            currentlyPlayingAudio = null;
 
             // Hide welcome screen
             welcomeScreen.classList.add('hidden');
-
+            
             // Show quiz container
             quizContainer.classList.remove('hidden');
-
+            
             // Load first question
             loadQuestion(currentQuestionIndex);
         });
@@ -311,7 +345,7 @@
                     case 'imageWithSound':
                         // Create a container for image and audio
                         const imgWithSoundContainer = document.createElement('div');
-                        imgWithSoundContainer.className = "flex flex-col items-center mb-4";
+                        imgWithSoundContainer.className = "relative w-full mb-4"; // Relative positioning for absolute button
 
                         // Create Image Element
                         const imgWithSound = document.createElement('img');
@@ -323,43 +357,61 @@
                         const audioWithSound = document.createElement('audio');
                         audioWithSound.src = questionObj.media.audioSrc;
                         audioWithSound.className = "hidden"; // Hidden by default
+                        audioWithSound.preload = "auto"; // Preload the audio
 
-                        // Create Speaker Icon Button
-                        const speakerBtn = document.createElement('button');
-                        speakerBtn.className = "mt-2 focus:outline-none";
-                        speakerBtn.setAttribute('aria-label', 'Toggle Audio');
+                        // Create Play/Pause Button
+                        const audioBtn = document.createElement('button');
+                        audioBtn.className = "absolute top-2 right-2 bg-white dark:bg-gray-700 rounded-full p-1 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500";
+                        audioBtn.setAttribute('aria-label', 'Play Audio');
 
-                        // Speaker Icon SVG (muted by default)
-                        speakerBtn.innerHTML = `
-                            <svg id="speakerIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-800 dark:text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path id="speakerPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5l-7 7m0 0l7 7m-7-7h18" />
-                            </svg>
-                        `;
+                        // Create Image Element for Play/Pause Icon
+                        const audioIcon = document.createElement('img');
+                        audioIcon.src = "images/play.png"; // Path to your play icon
+                        audioIcon.alt = "Play Audio";
+                        audioIcon.className = "h-6 w-6";
 
-                        // Toggle Functionality
-                        speakerBtn.addEventListener('click', () => {
+                        // Append the icon to the button
+                        audioBtn.appendChild(audioIcon);
+
+                        // Toggle Functionality with Debugging
+                        audioBtn.addEventListener('click', () => {
+                            console.log(`Button clicked for question ${index + 1}`);
                             if (audioWithSound.paused) {
-                                audioWithSound.play();
-                                // Change icon to indicate audio is playing
-                                speakerBtn.innerHTML = `
-                                    <svg id="speakerIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path id="speakerPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5l-7 7m0 0l7 7m-7-7h18" />
-                                    </svg>
-                                `;
+                                // Pause any currently playing audio
+                                if (currentlyPlayingAudio && currentlyPlayingAudio !== audioWithSound) {
+                                    currentlyPlayingAudio.pause();
+                                    // Reset the corresponding icon to play
+                                    const previousAudioBtn = currentlyPlayingAudio.parentElement.querySelector('button');
+                                    if (previousAudioBtn) {
+                                        const previousAudioIcon = previousAudioBtn.querySelector('img');
+                                        previousAudioIcon.src = "images/play.png";
+                                        previousAudioIcon.alt = "Play Audio";
+                                    }
+                                }
+
+                                audioWithSound.play().then(() => {
+                                    console.log('Audio playing');
+                                    // Change icon to pause
+                                    audioIcon.src = "images/pause.png"; // Path to your pause icon
+                                    audioIcon.alt = "Pause Audio";
+                                    currentlyPlayingAudio = audioWithSound;
+                                }).catch((error) => {
+                                    console.error('Error playing audio:', error);
+                                    alert('Kan de audio niet afspelen. Controleer je browserinstellingen.');
+                                });
                             } else {
                                 audioWithSound.pause();
-                                // Change icon back to muted
-                                speakerBtn.innerHTML = `
-                                    <svg id="speakerIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-800 dark:text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path id="speakerPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5l-7 7m0 0l7 7m-7-7h18" />
-                                    </svg>
-                                `;
+                                console.log('Audio paused');
+                                // Change icon to play
+                                audioIcon.src = "images/play.png"; // Path to your play icon
+                                audioIcon.alt = "Play Audio";
+                                currentlyPlayingAudio = null;
                             }
                         });
 
-                        // Append elements
+                        // Append elements to the container
                         imgWithSoundContainer.appendChild(imgWithSound);
-                        imgWithSoundContainer.appendChild(speakerBtn);
+                        imgWithSoundContainer.appendChild(audioBtn);
                         imgWithSoundContainer.appendChild(audioWithSound);
                         mediaContent.appendChild(imgWithSoundContainer);
                         break;
