@@ -95,7 +95,7 @@
         <!-- Question and Media Container -->
         <div class="flex-1 overflow-auto mb-4">
             <!-- Question Area -->
-            <div id="questionArea" class="mb-4">
+            <div id="questionArea" class="mb-10">
                 <!-- Question will be displayed here -->
             </div>
 
@@ -178,7 +178,7 @@
                 category: "Entertainment",
                 media: {
                     type: "text",
-                    content: "Annie Lennox is in 1954 op eerste kerstdag geboren in Aberdeen. De succesvolle band waarin ze de lead zangeres was, is genoemd naar de Dalcroze Eurhythmics lessen die ze volgde tijdens high school. Ze heeft samen met David Bowie het nummer 'Under Pressure' gezongen. Met het lied 'Into the West' uit Lord of the Rings heeft ze een Oscar gewonnen. <hr class='m-10'>Freddie Mercury is op 5 september 1946 geboren in Feltham, Middlesex. Na zijn afstuderen verkocht hij een tijdje tweedehands kleding in Kensington Market samen met Roger Taylor de drummer van Queen. Ooit beschreven als 'de beste virtuoze rock-'n-rollzanger aller tijden' zijn er zelfs wetenschappelijke onderzoeken uitgevoerd naar zijn uitzonderlijke stemkwaliteiten.<hr class='m-10'>David Bowie is op 8 Januari 1947 geboren in Brixton London. Ondanks dat hij tijdens een Talentenjacht door de BBC werd beoordeeld als 'een zanger zonder greintje persoonlijkheid' groeide hij uit tot een veelzijdige popicoon. Zijn grootste hit was 'Let's dance' uit 1983. Als acteur speelde hij onder andere in 'Merry Christmas, Mr. Lawrence' en 'Labyrinth.'"
+                    content: "<span class='font-bold'>Annie Lennox</span> is in 1954 op eerste kerstdag geboren in Aberdeen. De succesvolle band waarin ze de lead zangeres was, is genoemd naar de Dalcroze Eurhythmics lessen die ze volgde tijdens high school. Ze heeft samen met David Bowie het nummer 'Under Pressure' gezongen. Met het lied 'Into the West' uit Lord of the Rings heeft ze een Oscar gewonnen. <hr class='m-10'><span class='font-bold'>Freddie Mercury</span> is op 5 september 1946 geboren in Feltham, Middlesex. Na zijn afstuderen verkocht hij een tijdje tweedehands kleding in Kensington Market samen met Roger Taylor de drummer van Queen. Ooit beschreven als 'de beste virtuoze rock-'n-rollzanger aller tijden' zijn er zelfs wetenschappelijke onderzoeken uitgevoerd naar zijn uitzonderlijke stemkwaliteiten.<hr class='m-10'><span class='font-bold'>David Bowie</span> is op 8 Januari 1947 geboren in Brixton London. Ondanks dat hij tijdens een Talentenjacht door de BBC werd beoordeeld als 'een zanger zonder greintje persoonlijkheid' groeide hij uit tot een veelzijdige popicoon. Zijn grootste hit was 'Let's dance' uit 1983. Als acteur speelde hij onder andere in 'Merry Christmas, Mr. Lawrence' en 'Labyrinth.'"
                 },
                 time: 30
             },
@@ -300,7 +300,7 @@
 
             // Display Question
             questionArea.innerHTML = `
-                <h2 class="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-100">Q${index + 1}: ${questionObj.question}</h2>
+                <h2 class="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-100">${questionObj.question}</h2>
             `;
 
             // Trigger MathJax typesetting after inserting the question
