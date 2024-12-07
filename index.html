@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl"> <!-- Aangepast naar Nederlands -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,19 +51,31 @@
     </button>
 
     <!-- Welcome Screen -->
-    <div id="welcomeScreen" class="flex flex-col items-center justify-center w-full h-full md:h-[80vh] bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6">
+    <div id="welcomeScreen" class="flex flex-col items-center justify-center w-full max-w-3xl bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-6">
+        
         <!-- Welcome Image with Play/Pause Button -->
-        <div class="relative w-1/4 md:w-1/4">
+        <div class="relative w-full md:w-1/3">
             <img src="images/sintesizer.jpg" alt="Welcome Image" class="w-full rounded">
             
             <!-- Play/Pause Button -->
-            <button id="backgroundAudioBtn" class="absolute top-2 right-2 bg-white dark:bg-gray-700 rounded-full p-1 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Play Background Music">
+            <button id="backgroundAudioBtn" class="absolute top-2 right-2 bg-white dark:bg-gray-700 rounded-full p-2 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Play Background Music">
                 <img src="images/play.png" alt="Play Audio" class="h-6 w-6">
             </button>
         </div>
         
         <!-- Welcome Text -->
-        <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-100 text-center">Welkom bij de Grote Sinterklaas Quiz 2024!</h1>
+        <div class="text-gray-800 dark:text-gray-100 text-center space-y-4">
+            <h1 class="text-4xl font-bold">Welcome &amp; wilkommen, lieve Familie ten Hove!</h1>
+            <p class="text-lg">
+                Het is Sinterklaastijd, en dat betekent gezelligheid, liedjes én... een speciale pubquiz! 🎅✨ Maak je klaar voor een reis door cultuur, tradities, mode, en verrassingen! Vanavond strijden jullie om de ultieme titel: Pubquiz Master of misschien zelfs Quizzer Extraordinaire!
+            </p>
+            <p class="text-lg">
+                Ready to go? Super! Zet je denkpet op, prepara tus respuestas, blijf scherp et amusez-vous bien! Wie weet, wordt jouw naam vereeuwigd in de quizgeschiedenis van de familie ten Hove.
+            </p>
+            <p class="text-lg">
+                Veel succes, bonne chance, buena fortuna und vor allem: geniet! Laat het spel beginnen! 🎲👑
+            </p>
+        </div>
         
         <!-- Background Music -->
         <audio id="backgroundMusic" src="audio/music.mp3" loop preload="auto"></audio>
@@ -73,7 +85,6 @@
             Start
         </button>
     </div>
-
 
     <!-- Quiz Container -->
     <div id="quizContainer" class="hidden max-w-3xl w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 flex flex-col h-full md:h-[80vh] relative">
@@ -135,7 +146,7 @@
         const questions = [
             {
                 question: "Tot welke dierenfamilie behoren deze planten en wat is de latijnse benaming van deze familie?",
-                category: "Wetenschap",
+                category: "Wetenschap & Technologie",
                 media: {
                     type: "image",
                     src: "https://github.com/witusj/pubquiz/blob/main/images/flowers.png?raw=true",
@@ -145,7 +156,7 @@
             },
             {
                 question: "Welke Star Wars acteur is dit jaar overleden en welk personage speelde hij?",
-                category: "Entertainment",
+                category: "Cultuur & Entertainment",
                 media: {
                     type: "imageWithSound",
                     imageSrc: "https://github.com/witusj/pubquiz/blob/main/images/starwars.png?raw=true",
@@ -156,7 +167,7 @@
             },
             {
                 question: "Hoeveel is \\(x^{2}\\) + \\(y^{2}\\) in dit geval en wat heeft Pythagoras hiermee te maken?",
-                category: "Wetenschap",
+                category: "Wetenschap & Technologie",
                 media: {
                     type: "image",
                     src: "https://github.com/witusj/pubquiz/blob/main/images/pythogoras.png?raw=true",
@@ -166,7 +177,7 @@
             },
             {
                 question: "Welk liedje wordt hier vakkundig gecoverd en uit welke populaire tv-show uit de jaren 70/80 komt het?",
-                category: "Entertainment",
+                category: "Cultuur & Entertainment",
                 media: {
                     type: "youtube",
                     src: "https://www.youtube.com/embed/AqbM1ZDMJeI?autoplay=1" // DON’T delete autoplay=1
@@ -174,8 +185,17 @@
                 time: 20
             },
             {
+                question: "In welke eeuw was de Nederlandse Gouden Eeuw, en waarom wordt deze periode zo genoemd?",
+                category: "Kunst & Geschiedenis",
+                media: {
+                    type: "text",
+                    content: "<blockquote class='my-10 border-l-4 border-blue-500 pl-4 italic text-3xl text-gray-700 dark:text-gray-300 mb-8'><p>Non tentare mai di vincere con la forza ciò che può essere vinto con l'inganno.</p></blockquote>"
+                },
+                time: 20
+            },
+            {
                 question: "Welke mini-biografie is onjuist en waarom?",
-                category: "Entertainment",
+                category: "Cultuur & Entertainment",
                 media: {
                     type: "text",
                     content: "<span class='font-bold'>Annie Lennox</span> is in 1954 op eerste kerstdag geboren in Aberdeen. De succesvolle band waarin ze de lead zangeres was, is genoemd naar de Dalcroze Eurhythmics lessen die ze volgde tijdens high school. Ze heeft samen met David Bowie het nummer 'Under Pressure' gezongen. Met het lied 'Into the West' uit Lord of the Rings heeft ze een Oscar gewonnen. <hr class='m-10'><span class='font-bold'>Freddie Mercury</span> is op 5 september 1946 geboren in Feltham, Middlesex. Na zijn afstuderen verkocht hij een tijdje tweedehands kleding in Kensington Market samen met Roger Taylor de drummer van Queen. Ooit beschreven als 'de beste virtuoze rock-'n-rollzanger aller tijden' zijn er zelfs wetenschappelijke onderzoeken uitgevoerd naar zijn uitzonderlijke stemkwaliteiten.<hr class='m-10'><span class='font-bold'>David Bowie</span> is op 8 Januari 1947 geboren in Brixton London. Ondanks dat hij tijdens een Talentenjacht door de BBC werd beoordeeld als 'een zanger zonder greintje persoonlijkheid' groeide hij uit tot een veelzijdige popicoon. Zijn grootste hit was 'Let's dance' uit 1983. Als acteur speelde hij onder andere in 'Merry Christmas, Mr. Lawrence' en 'Labyrinth.'"
@@ -183,8 +203,37 @@
                 time: 30
             },
             {
+                question: "Van welke tijdsgenoot van Michelangelo is deze uitspraak en hoe heet de culturele periode waarin bij leefde?",
+                category: "Kunst & Geschiedenis",
+                media: {
+                    type: "text",
+                    content: "<blockquote class='my-10 border-l-4 border-blue-500 pl-4 italic text-3xl text-gray-700 dark:text-gray-300 mb-8'><p>Non tentare mai di vincere con la forza ciò che può essere vinto con l'inganno.</p></blockquote>"
+                },
+                time: 20
+            },
+            {
+                question: "Voor welk automerk reed Enzo Ferrari met zijn renstal voordat hij zijn eigen merk begon en wat is de biologische overeenkomst tussen de beide logo's?",
+                category: "Wetenschap & Technologie",
+                media: {
+                    type: "image",
+                    src: "https://github.com/witusj/pubquiz/blob/main/images/guilia.png?raw=true",
+                    alt: "Spider"
+                },
+                time: 20 // seconds
+            },
+            {
+                question: "Welke Nederlandse schilder maakte dit schilderij en in welk jaar werd het geschilderd?",
+                category: "Kunst & Geschiedenis",
+                media: {
+                    type: "image",
+                    src: "https://github.com/witusj/pubquiz/blob/main/images/nachtwacht.jpg?raw=true",
+                    alt: "Spider"
+                },
+                time: 20 // seconds
+            },
+            {
                 question: "Om welke film gaat het hier en wie was de vader van de actrice die de vrouw van de hoofdpersonage speelde?",
-                category: "Entertainment",
+                category: "Cultuur & Entertainment",
                 media: {
                     type: "imageWithSound",
                     imageSrc: "https://github.com/witusj/pubquiz/blob/main/images/dz.jpg?raw=true",
@@ -194,17 +243,55 @@
                 time: 20 // seconds
             },
             {
-                question: "Van welke tijdsgenoot van Michelangelo is deze uitspraak en hoe heet de culturele periode waarin bij leefde?",
-                category: "Geschiedenis",
+                question: "Vertaal de volgende zin uit Europanto en raad uit welke talen deze mix bestaat.",
+                category: "Kunst & Geschiedenis",
                 media: {
                     type: "text",
-                    content: "<blockquote class='my-10 border-l-4 border-blue-500 pl-4 italic text-3xl text-gray-700 dark:text-gray-300 mb-8'><p>Non tentare mai di vincere con la forza ciò che può essere vinto con l'inganno.</p></blockquote>"
+                    content: "<blockquote class='my-10 border-l-4 border-blue-500 pl-4 italic text-3xl text-gray-700 dark:text-gray-300 mb-8'><p>Mi amigo hat eine Katze und la chatte est blanche.</p></blockquote>"
                 },
                 time: 20
             },
             {
-                question: "Voor welk automerk reed Enzo Ferrari met zijn renstal voordat hij zijn eigen merk begon en wat is de biologische overeenkomst tussen de beide logo's?",
-                category: "Technologie",
+                question: "Bekijk de video en beantwoord: Hoe heet deze dans en uit welk land komt deze?",
+                category: "Cultuur & Entertainment",
+                media: {
+                    type: "youtube",
+                    src: "https://www.youtube.com/embed/AqbM1ZDMJeI?autoplay=1" // DON’T delete autoplay=1
+                },
+                time: 20
+            },
+            {
+                question: "Hoe heet dit beroemde gerecht, en in welk jaar werd het voor het eerst gemaakt?",
+                category: "Gastronomie",
+                media: {
+                    type: "image",
+                    src: "https://github.com/witusj/pubquiz/blob/main/images/guilia.png?raw=true",
+                    alt: "Spider"
+                },
+                time: 20 // seconds
+            },
+            {
+                question: "Waar is deze foto genomen en wat is bijzonder aan deze plek?",
+                category: "Gastronomie",
+                media: {
+                    type: "image",
+                    src: "https://github.com/witusj/pubquiz/blob/main/images/guilia.png?raw=true",
+                    alt: "Spider"
+                },
+                time: 20 // seconds
+            },
+            {
+                question: "Wie droeg de beroemde 'little black dress' in de film Breakfast at Tiffany's, en welke modeontwerper ontwierp het?",
+                category: "Cultuur & Entertainment",
+                media: {
+                    type: "youtube",
+                    src: "https://www.youtube.com/embed/JuimqB3ofEI;start=11?autoplay=1" // DON’T delete autoplay=1
+                },
+                time: 20
+            },
+            {
+                question: "Hoe heet het paard van Sinterklaas en welke kleur heeft het?",
+                category: "Sinterklaas",
                 media: {
                     type: "image",
                     src: "https://github.com/witusj/pubquiz/blob/main/images/guilia.png?raw=true",
@@ -213,7 +300,6 @@
                 time: 20 // seconds
             }
         ];
-
 
         let currentQuestionIndex = 0;
         let timerInterval;
